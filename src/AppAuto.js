@@ -2,23 +2,10 @@ import React, { useState } from 'react';
 import './App.css';
 
 const gameOverStr = ',036,147,258,012,345,678,048,246,';
+const corner = ['0','2','6','8'];
 
 let gameOverO = gameOverStr;
 let gameOverX = gameOverStr;
-
-// const gameOver = [
-//   // 直
-//   [0, 3, 6],
-//   [1, 4, 7],
-//   [2, 5, 8],
-//   // 橫
-//   [0, 1, 2],
-//   [3, 4, 5],
-//   [6, 7, 8],
-//   // 斜
-//   [0, 4, 8],
-//   [2, 4, 6]
-// ];
 
 export default function App() {
   const [isO, setIsO] = useState(true);
@@ -27,15 +14,70 @@ export default function App() {
   const [initiative, setInitiative] = useState(true);
 
   const handleClick = index => {
-
     if(plate[index] === "" && !over) {
-      const newPlate = [
-        ...plate.slice(0, index),
-        isO,
-        ...plate.slice(index + 1),
-      ];
+      if([gameOverX, gameOverO][+isO].includes('4') && index !== 4) {
+        const newPlate = [
+          ...plate.slice(0, index),
+          isO,
+          ...plate.slice(index + 1),
+        ];
+        const newPlate2 = [
+          ...newPlate.slice(0, 4),
+          !isO,
+          ...newPlate.slice(5),
+        ];
+        setPlate(newPlate2);
+      } else {
+        for(i = 0; i < 9; i++) {
+          if([gameOverX, gameOverO][+isO].includes(`,${i},`) && index !== i) {
+            const newPlate = [
+              ...plate.slice(0, index),
+              isO,
+              ...plate.slice(index + 1),
+            ];
+            const newPlate2 = [
+              ...newPlate.slice(0, i),
+              !isO,
+              ...newPlate.slice(i + 1),
+            ];
+            setPlate(newPlate2);
+            return;
+          }
+        }
 
-      setPlate(newPlate);
+        const newPlate = [
+          ...plate.slice(0, index),
+          isO,
+          ...plate.slice(index + 1),
+        ];
+
+        for(i = 0; i < corner.length; i++) {
+          if([gameOverX, gameOverO][+isO].includes(i) &&  index !== i) {
+            const newPlate = [
+              ...plate.slice(0, index),
+              isO,
+              ...plate.slice(index + 1),
+            ];
+            const newPlate2 = [
+              ...newPlate.slice(0, i),
+              !isO,
+              ...newPlate.slice(i + 1),
+            ];
+            setPlate(newPlate2);
+            return;
+          } else {
+            ????
+          }
+        }
+
+        const newPlate2 = [
+          ...newPlate.slice(0, i),
+          !isO,
+          ...newPlate.slice(i + 1),
+        ];
+        setPlate(newPlate2);
+      }
+
 
       if(isO) {
         gameOverO = gameOverO.replace(new RegExp(index, 'g'), '');
@@ -47,19 +89,9 @@ export default function App() {
         setOver(true);
         return;
       }
-
-      setIsO(!isO);
-
-      // for(let i = 0; i < gameOver.length; i++) {
-      //   if(newPlate[gameOver[i][0]] &&
-      //       newPlate[gameOver[i][1]] &&
-      //         newPlate[gameOver[i][2]]
-      //   ) {
-      //     setOver(true);
-      //     setIsO(true);
-      //   }
-      // }
+      // setIsO(!isO);
     }
+    console.log(gameOverO, gameOverX);
 
   };
 

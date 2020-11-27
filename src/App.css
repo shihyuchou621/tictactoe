@@ -2,7 +2,8 @@
   width: 150px;
   height: 150px;
   margin: 0 auto;
-  /* border: 1px solid black; */
+  position: relative;
+  /* border: 1px solid black;*/
 }
 
 .unit {
@@ -12,7 +13,28 @@
   font-size: 20px;
   cursor: pointer;
   text-align: center;
-  display: inline-block;
+  background: #eee;
+  /* ↓dib的時候不加這個垂直位置會跑掉 */
+  vertical-align: top;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
   border: 1px solid rgb(110, 110, 110);
+}
+
+.tttAnswer {
+  margin: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  position: absolute;
+}
+
+button {
+  display: block;
+  margin: 0 auto;
+}
+
+.initiative {
+  margin: 10px auto;
 }
