@@ -8,21 +8,28 @@ let gameOverO = gameOverStr;
 let gameOverX = gameOverStr;
 
 class AI {
-  think1() {
-    return 'think1';
-  }
-  think2() {
-    return 'think2';
-  }
-  play (plate) {
-    console.log(this.think1());
-    console.log(this.think2());
-    return plate;
+  play ( plate, isO ) {
+    if(plate[4] !== "") {
+      return [
+        ...plate.slice(0, 4),
+        !isO,
+        ...plate.slice(5),
+      ];
+    } else {
+
+      for(let i = 0; i < 9; i++) {
+        if([gameOverX, gameOverO][+isO].includes(`,${i},`)) {
+          const newPlate = [
+            ...[gameOverX, gameOverO][+isO].slice(0, i),
+            !isO,
+            ...[gameOverX, gameOverO][+isO].slice(i + 1),
+          ];
+          return newPlate;
+        }
+      }
+    }
   }
 }
-
-const ai = new AI();
-ai.play([true, true]);
 
 export default function App() {
   const [isO, setIsO] = useState(true);
@@ -32,89 +39,45 @@ export default function App() {
 
   const handleClick = index => {
     if(plate[index] === "" && !over) {
-      if([gameOverX, gameOverO][+isO].includes('4') && index !== 4) {
-        const newPlate = [
-          ...plate.slice(0, index),
-          isO,
-          ...plate.slice(index + 1),
-        ];
-        const newPlate2 = [
-          ...newPlate.slice(0, 4),
-          !isO,
-          ...newPlate.slice(5),
-        ];
-        setPlate(newPlate2);
-      } else {
-        for(i = 0; i < 9; i++) {
-          if([gameOverX, gameOverO][+isO].includes(`,${i},`) && index !== i) {
-            const newPlate = [
-              ...plate.slice(0, index),
-              isO,
-              ...plate.slice(index + 1),
-            ];
-            const newPlate2 = [
-              ...newPlate.slice(0, i),
-              !isO,
-              ...newPlate.slice(i + 1),
-            ];
-            setPlate(newPlate2);
-            return;
-          }
-        }
+      const newPlate = [
+        ...plate.slice(0, index),
+        isO,
+        ...plate.slice(index + 1),
+      ];
 
-        const newPlate = [
-          ...plate.slice(0, index),
-          isO,
-          ...plate.slice(index + 1),
-        ];
+      setPlate(newPlate);
 
-        for(i = 0; i < corner.length; i++) {
-          if([gameOverX, gameOverO][+isO].includes(i) &&  index !== i) {
-            const newPlate = [
-              ...plate.slice(0, index),
-              isO,
-              ...plate.slice(index + 1),
-            ];
-            const newPlate2 = [
-              ...newPlate.slice(0, i),
-              !isO,
-              ...newPlate.slice(i + 1),
-            ];
-            setPlate(newPlate2);
-            return;
-          } else {
-            // ????
-          }
-        }
-
-        const newPlate2 = [
-          ...newPlate.slice(0, i),
-          !isO,
-          ...newPlate.slice(i + 1),
-        ];
-        setPlate(newPlate2);
-      }
-
-
-      if(isO) {
-        gameOverO = gameOverO.replace(new RegExp(index, 'g'), '');
-      } else {
+      isO ?
+        gameOverO = gameOverO.replace(new RegExp(index, 'g'), '') :
         gameOverX = gameOverX.replace(new RegExp(index, 'g'), '');
-      }
 
       if([gameOverX, gameOverO][+isO].includes(',,')) {
         setOver(true);
         return;
       }
-      // setIsO(!isO);
+      setIsO(!isO);
     }
-    console.log(gameOverO, gameOverX);
 
+    const ai = new AI();
+    ai.play(plate);
+
+    if(isO) {
+      gameOverO = gameOverO.replace(new RegExp(index, 'g'), '');
+    } else {
+      gameOverX = gameOverX.replace(new RegExp(index, 'g'), '');
+    }
+
+    if([gameOverX, gameOverO][+isO].includes(',,')) {
+      setOver(true);
+      return;
+    }
   };
 
   const resetGame = () => {
     setOver(false);
     setPlate(Array(9).fill(""));
+    setIsO(true);
+    setInitiative(true);
     gameOverO = gameOverStr;
     gameOverX = gameOverStr;
   };

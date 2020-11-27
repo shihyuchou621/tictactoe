@@ -66,6 +66,8 @@ export default function App() {
   const resetGame = () => {
     setOver(false);
     setPlate(Array(9).fill(""));
+    setIsO(true);
+    setInitiative(true);
     gameOverO = gameOverStr;
     gameOverX = gameOverStr;
   };
