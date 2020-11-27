@@ -7,6 +7,23 @@ const corner = ['0','2','6','8'];
 let gameOverO = gameOverStr;
 let gameOverX = gameOverStr;
 
+class AI {
+  think1() {
+    return 'think1';
+  }
+  think2() {
+    return 'think2';
+  }
+  play (plate) {
+    console.log(this.think1());
+    console.log(this.think2());
+    return plate;
+  }
+}
+
+const ai = new AI();
+ai.play([true, true]);
+
 export default function App() {
   const [isO, setIsO] = useState(true);
   const [plate, setPlate] = useState(Array(9).fill(""));
@@ -66,7 +83,7 @@ export default function App() {
             setPlate(newPlate2);
             return;
           } else {
-            ????
+            // ????
           }
         }
 
