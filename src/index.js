@@ -4,6 +4,8 @@ import './index.css';
 import AppAuto from './AppAuto';
 import reportWebVitals from './reportWebVitals';
 
+import AI from './AI';
+
 ReactDOM.render(
   <React.StrictMode>
     <AppAuto />

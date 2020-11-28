@@ -1,77 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import isWin from "./isWin";
 import './App.css';
 
-const gameOverStr = ',036,147,258,012,345,678,048,246,';
 const corner = ['0','2','6','8'];
 
-let gameOverO = gameOverStr;
-let gameOverX = gameOverStr;
 
+/* 這邊不一定要傳 isO 因為圈先是固定的 */
 class AI {
   play ( plate, isO ) {
-    if(plate[4] !== "") {
-      return [
-        ...plate.slice(0, 4),
-        !isO,
-        ...plate.slice(5),
-      ];
-    } else {
-
-      for(let i = 0; i < 9; i++) {
-        if([gameOverX, gameOverO][+isO].includes(`,${i},`)) {
-          const newPlate = [
-            ...[gameOverX, gameOverO][+isO].slice(0, i),
-            !isO,
-            ...[gameOverX, gameOverO][+isO].slice(i + 1),
-          ];
-          return newPlate;
-        }
-      }
+    if(plate[4] === "") {
+      const newPlate = [...plate];
+      newPlate[4] = isO ? 'X': 'O';
+      return newPlate;
     }
+    return plate;
+    //   for(let i = 0; i < 9; i++) {
+    //     if([gameOverX, gameOverO][+isO].includes(`,${i},`)) {
+    //       const newPlate = [
+    //         ...[gameOverX, gameOverO][+isO].slice(0, i),
+    //         !isO,
+    //         ...[gameOverX, gameOverO][+isO].slice(i + 1),
+    //       ];
+    //       return newPlate;
+    //     }
+    //   }
   }
 }
 
 export default function App() {
   const [isO, setIsO] = useState(true);
+  const [aiFirst, setAiFirst] = useState(false);
   const [plate, setPlate] = useState(Array(9).fill(""));
-  const [over, setOver] = useState(false);
+  const [over, setOver] = useState(""); // "", "O", "X", "T"
   const [initiative, setInitiative] = useState(true);
 
-  const handleClick = index => {
-    if(plate[index] === "" && !over) {
-      const newPlate = [
-        ...plate.slice(0, index),
-        isO,
-        ...plate.slice(index + 1),
-      ];
-
+  useEffect(() => {
+    if(aiFirst || plate.join('') !== "")
+    {const ai = new AI();
+      const newPlate = ai.play(plate, isO);
       setPlate(newPlate);
 
-      isO ?
-        gameOverO = gameOverO.replace(new RegExp(index, 'g'), '') :
-        gameOverX = gameOverX.replace(new RegExp(index, 'g'), '');
+      const result = isWin(newPlate);
+      if(result) {setOver(result);}}
+  }, [plate.join('')]);
 
-      if([gameOverX, gameOverO][+isO].includes(',,')) {
-        setOver(true);
-        return;
-      }
-      setIsO(!isO);
-    }
+  const handleClick = index => {
+    const newPlate = [...plate];
+    newPlate[index] = isO ? 'O': 'X';
+    setPlate(newPlate);
 
-    const ai = new AI();
-    ai.play(plate);
-
-    if(isO) {
-      gameOverO = gameOverO.replace(new RegExp(index, 'g'), '');
-    } else {
-      gameOverX = gameOverX.replace(new RegExp(index, 'g'), '');
-    }
-
-    if([gameOverX, gameOverO][+isO].includes(',,')) {
-      setOver(true);
-      return;
-    }
+    const result = isWin(newPlate);
+    if(result) {setOver(result);}
   };
+
+  // ai.play(plate, isO);
 
   const resetGame = () => {
     setOver(false);
@@ -83,7 +65,7 @@ export default function App() {
   };
 
   const setInit = () => {
-    if(!plate.includes(true) && !plate.includes(false)) {
+    if(plate.join('') === "") {
       setIsO(!isO);
       setInitiative(!initiative);
     }
@@ -99,8 +81,7 @@ export default function App() {
         {
           plate.map((unit, index) =>
             <div className="unit" key={index} onClick={handleClick.bind(this, index)}>
-              {plate[index] === false ? "X" :
-                plate[index] === true ? "O" : ""}
+              {unit}
             </div>
           )
         }
