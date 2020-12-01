@@ -3,52 +3,95 @@ import isWin from "./isWin";
 import './App.css';
 
 const corner = ['0','2','6','8'];
+const gameOverStr = ',036,147,258,012,345,678,048,246,';
 
+const produceNewStr = (plate, isO) => {
+  let newStr = gameOverStr;
+  for(let i = 0; i < 9; i++) {
+    const player = isO ? 'O': 'X';
+    if(plate[i] === player) {
+      newStr = newStr.replace(new RegExp(i, 'g'), '');
+    }
+  }
+  return newStr;
+};
+
+const setCorner = (plate, isO, a, b) => {
+  const newPlate = [...plate];
+  if(plate[a] === "" && plate[b] === "") {
+    const i = Math.random() < 0.5 ? a : b;
+    newPlate[i] = isO ? 'X': 'O';
+    return newPlate;
+  }
+  return newPlate;
+};
 
 /* 這邊不一定要傳 isO 因為圈先是固定的 */
 class AI {
   play ( plate, isO ) {
+
+    let newPlate = [...plate];
+
     if(plate[4] === "") {
-      const newPlate = [...plate];
       newPlate[4] = isO ? 'X': 'O';
       return newPlate;
     }
-    return plate;
-    //   for(let i = 0; i < 9; i++) {
-    //     if([gameOverX, gameOverO][+isO].includes(`,${i},`)) {
-    //       const newPlate = [
-    //         ...[gameOverX, gameOverO][+isO].slice(0, i),
-    //         !isO,
-    //         ...[gameOverX, gameOverO][+isO].slice(i + 1),
-    //       ];
-    //       return newPlate;
-    //     }
-    //   }
+
+    for(let i = 0; i < 9; i++) {
+      if(produceNewStr(plate, !isO).includes(`,${i},`) && plate[i] === "") {
+        newPlate[i] = isO ? 'X': 'O';
+        return newPlate;
+      }
+    }
+
+    for(let i = 0; i < 9; i++) {
+      if(produceNewStr(plate, isO).includes(`,${i},`) && plate[i] === "") {
+        newPlate[i] = isO ? 'X': 'O';
+        return newPlate;
+      }
+    }
+
+    newPlate = setCorner(plate, isO, 0, 8);
+    if(newPlate.join('') !== plate.join('')) return newPlate;
+
+    newPlate = setCorner(plate, isO, 2, 6);
+    if(newPlate.join('') !== plate.join('')) return newPlate;
+
+    newPlate = setCorner(plate, isO, 1, 7);
+    if(newPlate.join('') !== plate.join('')) return newPlate;
+
+    newPlate = setCorner(plate, isO, 3, 5);
+    if(newPlate.join('') !== plate.join('')) return newPlate;
+
+    newPlate[plate.findIndex(v => v === "")] = isO ? 'X': 'O';
+    return newPlate;
   }
 }
 
 export default function App() {
   const [isO, setIsO] = useState(true);
   const [aiFirst, setAiFirst] = useState(false);
+  const [initiative, setInitiative] = useState(true);
   const [plate, setPlate] = useState(Array(9).fill(""));
   const [over, setOver] = useState(""); // "", "O", "X", "T"
-  const [initiative, setInitiative] = useState(true);
+  const [start, setStart] = useState(false);
 
   useEffect(() => {
-    if(aiFirst || plate.join('') !== "")
-    {const ai = new AI();
-      const newPlate = ai.play(plate, isO);
-      setPlate(newPlate);
-
-      const result = isWin(newPlate);
-      if(result) {setOver(result);}}
-  }, [plate.join('')]);
+    if(over) return;
+    if(!(aiFirst || plate.join('') !== "")) return;
+    const ai = new AI();
+    const newPlate = ai.play(plate, isO);
+    setPlate(newPlate);
+    const result = isWin(newPlate);
+    if(result) {setOver(result);}
+  }, [plate.filter(ox => ox === (isO ? "O" : "X")).length, start]);
 
   const handleClick = index => {
+    if(!start) return;
+    if(plate[index] !== "") return;
     const newPlate = [...plate];
     newPlate[index] = isO ? 'O': 'X';
     setPlate(newPlate);
-
     const result = isWin(newPlate);
     if(result) {setOver(result);}
   };
@@ -60,39 +103,58 @@ export default function App() {
     setPlate(Array(9).fill(""));
     setIsO(true);
     setInitiative(true);
-    gameOverO = gameOverStr;
-    gameOverX = gameOverStr;
+    setStart(false);
+    setAiFirst(false);
   };
 
   const setInit = () => {
-    if(plate.join('') === "") {
-      setIsO(!isO);
-      setInitiative(!initiative);
-    }
+    setIsO(!isO);
+    setInitiative(!initiative);
+  };
+
+  const setFirstHand = () => {
+    setAiFirst(!aiFirst);
+  };
+
+  const startGame = () => {
+    setStart(!start);
   };
 
   return (
     <div>
       <button
-        className="initiative"
+        disabled={start}
         onClick={setInit}
-      >initiative: {initiative ? "O" : "X"}</button>
+      >You: {initiative ? "O" : "X"}</button>
+      <button
+        disabled={start}
+        onClick={setFirstHand}
+      >first hand: {aiFirst ? "AI" : "You"}
+      </button>
+      <button
+        onClick={startGame}
+        disabled={start}
+      >
+        START
+      </button>
       <div className="plate">
-        {
-          plate.map((unit, index) =>
-            <div className="unit" key={index} onClick={handleClick.bind(this, index)}>
-              {unit}
-            </div>
-          )
-        }
+        {plate.map((unit, index) =>
+          <div
+            key={index}
+            className="unit"
+            onClick={handleClick.bind(this, index)}
+          >
+            {unit}
+          </div>
+        )}
       </div>
-      { !!over&&
+      { (over === "O" || over === "X") &&
         <div className="tttAnswer">
-        winner: {isO ? "O" : "X"}
+        winner: {over}
           <button onClick={resetGame}>reset</button>
         </div>
       }
-      { !plate.includes("") &&
+      { over === "T" &&
         <div className="tttAnswer">
         break even
           <button onClick={resetGame}>reset</button>
