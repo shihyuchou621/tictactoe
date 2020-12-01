@@ -5,9 +5,7 @@ name: 建置、測試、部署
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches: [ dev ]
 
 jobs:
   build:
