@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import isWin from "./isWin";
+// import cx from 'classnames';
 import './App.css';
 
-const corner = ['0','2','6','8'];
 const gameOverStr = ',036,147,258,012,345,678,048,246,';
 
 const produceNewStr = (plate, isO) => {
@@ -121,43 +121,50 @@ export default function App() {
   };
 
   return (
-    <div>
+    <div className="gameBackground">
+
       <button
+        className={`choiceBtn `}
         disabled={start}
         onClick={setInit}
       >You: {initiative ? "O" : "X"}</button>
+
       <button
+        className={`choiceBtn`}
         disabled={start}
         onClick={setFirstHand}
       >first hand: {aiFirst ? "AI" : "You"}
       </button>
-      <button
-        onClick={startGame}
-        disabled={start}
-      >
-        START
-      </button>
+
       <div className="plate">
         {plate.map((unit, index) =>
           <div
             key={index}
-            className="unit"
+            className={`unit ${(start && !over) ? "" : "disabled"}`}
             onClick={handleClick.bind(this, index)}
           >
             {unit}
           </div>
         )}
+        {!start &&
+        <button
+          className="startBtn overPlate"
+          onClick={startGame}
+        >
+        START
+        </button>}
       </div>
+      <div className={over ? "cloth" : ""} />
       { (over === "O" || over === "X") &&
-        <div className="tttAnswer">
-        winner: {over}
-          <button onClick={resetGame}>reset</button>
+        <div className="overPlate">
+          <div className="resultText">winner: {over}</div>
+          <button className="startBtn" onClick={resetGame}>reset</button>
         </div>
       }
       { over === "T" &&
-        <div className="tttAnswer">
-        break even
-          <button onClick={resetGame}>reset</button>
+        <div className="overPlate">
+          <div className="resultText">break even</div>
+          <button className="startBtn" onClick={resetGame}>reset</button>
         </div>
       }
     </div>
