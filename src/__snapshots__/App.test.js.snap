@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders learn react link 1`] = `
+<div>
+  <div>
+    <button
+      class="initiative"
+    >
+      initiative: 
+      O
+    </button>
+    <div
+      class="plate"
+    >
+      <div
+        class="unit"
+      />
+      <div
+        class="unit"
+      />
+      <div
+        class="unit"
+      />
+      <div
+        class="unit"
+      />
+      <div
+        class="unit"
+      />
+      <div
+        class="unit"
+      />
+      <div
+        class="unit"
+      />
+      <div
+        class="unit"
+      />
+      <div
+        class="unit"
+      />
+    </div>
+  </div>
+</div>
+`;
