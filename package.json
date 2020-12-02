@@ -1,5 +1,6 @@
 {
   "name": "tic-tac-toe",
+  "homepage": "https://shihyuchou621.github.io/tictactoe",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
