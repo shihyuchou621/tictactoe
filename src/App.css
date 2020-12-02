@@ -116,5 +116,5 @@ button {
   height: 100%;
   position: fixed;
   background-color: white;
-  opacity: 80%;
+  opacity: .9; /* 不能使用百分比哦 */
 }
