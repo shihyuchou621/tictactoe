@@ -121,8 +121,7 @@ export default function App() {
   };
 
   return (
-    <div className="gameBackground">
-
+    <div>
       <button
         className={`choiceBtn `}
         disabled={start}
