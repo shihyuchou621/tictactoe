@@ -71,7 +71,7 @@ class AI {
 export default function App() {
   const [isO, setIsO] = useState(true);
   const [aiFirst, setAiFirst] = useState(false);
-  const [initiative, setInitiative] = useState(true);
+  // const [initiative, setInitiative] = useState(true);
   const [plate, setPlate] = useState(Array(9).fill(""));
   const [over, setOver] = useState(""); // "", "O", "X", "T"
   const [start, setStart] = useState(false);
@@ -101,19 +101,19 @@ export default function App() {
   const resetGame = () => {
     setOver(false);
     setPlate(Array(9).fill(""));
-    setIsO(true);
-    setInitiative(true);
+    // setIsO(true);
+    // setInitiative(true);
     setStart(false);
-    setAiFirst(false);
+    // setAiFirst(false);
   };
 
-  const setInit = () => {
-    setIsO(!isO);
-    setInitiative(!initiative);
+  const setInit = ({ target }) => {
+    setIsO(target.value === "O" ? true : false);
+    // setInitiative(target.value === "O" ? true : false);
   };
 
-  const setFirstHand = () => {
-    setAiFirst(!aiFirst);
+  const setFirstHand = ({ target }) => {
+    setAiFirst(target.value === "AI" ? true : false);
   };
 
   const startGame = () => {
@@ -122,18 +122,63 @@ export default function App() {
 
   return (
     <div>
-      <button
+      {/* <button
         className={`choiceBtn `}
         disabled={start}
         onClick={setInit}
-      >You: {initiative ? "O" : "X"}</button>
+      >You: {initiative ? "O" : "X"}</button> */}
+      <div className="selection">
+        You:
+        <span onChange={setInit}>
+          <input
+            disabled={start}
+            type="radio"
+            id="O"
+            value="O"
+            name="OX"
+            defaultChecked
+          />
+          <label for="O">O</label>
 
-      <button
+          <input
+            disabled={start}
+            type="radio"
+            id="X"
+            value="X"
+            name="OX"
+          />
+          <label for="X">X</label>
+        </span>
+      </div>
+
+      {/* <button
         className={`choiceBtn`}
         disabled={start}
         onClick={setFirstHand}
       >first hand: {aiFirst ? "AI" : "You"}
-      </button>
+      </button> */}
+
+      <div className="selection">
+        first hand:
+        <span onChange={setFirstHand}>
+          <input
+            type="radio"
+            id="You"
+            value="You"
+            name="who"
+            defaultChecked
+          />
+          <label for="You">You</label>
+
+          <input
+            type="radio"
+            id="AI"
+            value="AI"
+            name="who"
+          />
+          <label for="AI">AI</label>
+        </span>
+      </div>
 
       <div className="plate">
         {plate.map((unit, index) =>
@@ -142,7 +187,7 @@ export default function App() {
             className={`unit ${(start && !over) ? "" : "disabled"}`}
             onClick={handleClick.bind(this, index)}
           >
-            {unit}
+            <span className={`ox ${unit}`}>{unit}</span>
           </div>
         )}
         {!start &&
